@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Http\Controllers\API\BaseController;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
@@ -15,7 +14,7 @@ class BaseRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -25,7 +24,9 @@ class BaseRequest extends FormRequest
      */
     protected function failedValidation(Validator $validator)
     {
+
         $errors = $validator->errors();
+
         $data   = [];
         foreach ($errors->messages() as $item) {
             array_push($data, $item[0]);

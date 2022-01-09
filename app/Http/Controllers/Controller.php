@@ -31,12 +31,12 @@ class Controller extends
 
     /**
      * @param  string  $message
-     * @param  string  $data
+     * @param  string|array  $data
      * @return ResponseFactory|Response
      */
     public function returnFalse(
         string $message = 'failed',
-        string $data = 'No Data Found'
+        $data = 'No Data Found'
     ) {
         $response = [
             'status'  => false,

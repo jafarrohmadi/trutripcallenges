@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TripController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,9 +21,9 @@ Route::group(['prefix' => 'auth'], function() {
     Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('profile', [UserController::class, 'profile']);
         Route::post('logout', [UserController::class, 'logout'])->name('logout');
+
     });
 });
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['middleware' => 'auth:sanctum'], function () {
+    Route::resource('trip', TripController::class);
 });

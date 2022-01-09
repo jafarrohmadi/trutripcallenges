@@ -2,20 +2,19 @@
 
 namespace App\Resources;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Response;
 
-class ProfileResource extends
+class UserResource extends
     JsonResource
 {
     /**
      * Transform the resource into an array.
      *
      * @param  Request  $request
-     * @return ResponseFactory|Response
+     * @return array
      */
     public function toArray($request)
     {

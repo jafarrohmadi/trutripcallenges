@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
-use App\Resources\ProfileResource;
+use App\Resources\UserResource;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
@@ -41,7 +41,7 @@ class UserController extends Controller
      */
     public function profile()
     {
-        return $this->returnSuccess(new ProfileResource(me()));
+        return $this->returnSuccess(new UserResource(me()));
     }
 
     /**
