@@ -8,6 +8,7 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class UserController extends Controller
 {
@@ -41,8 +42,9 @@ class UserController extends Controller
      */
     public function profile()
     {
-
-        return $this->returnSuccess(new UserResource(me()));
+        return Cache::remember("user".me()->id,600, function () {
+           return $this->returnSuccess(new UserResource(me()));
+        });
     }
 
     /**

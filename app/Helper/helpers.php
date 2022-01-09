@@ -12,11 +12,11 @@ if (! function_exists('me')) {
 }
 
 if(!function_exists('dateDifference')){
-    function dateDifference($date): int
+    function dateDifference($date, $endDate): int
     {
         $startDate = Carbon::createFromDate($date);
-        $endDate = Carbon::now();
+        $endDate = Carbon::createFromDate($endDate);
 
-        return $startDate->diffInDays($endDate) - 1;
+        return  $startDate->diffInDays($endDate) + 1;
     }
 }

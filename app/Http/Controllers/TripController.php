@@ -11,6 +11,7 @@ use Exception;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 
 class TripController extends Controller
 {
@@ -20,7 +21,12 @@ class TripController extends Controller
      */
     public function index(Request $request)
     {
-        $trip = Trip::paginate($request->limit ?? 10);
+        $limit = $request->limit ?? 10;
+        $page  = $request->page ?? 1;
+
+        $trip = Cache::tags(['trip'])->rememberForever("trip_all-".me()->id.$limit.$page, function () use ($limit) {
+            return Trip::where('user_id', me()->id)->paginate($limit);
+        });
 
         return $this->returnSuccess(new TripCollection($trip));
     }
@@ -38,6 +44,8 @@ class TripController extends Controller
 
             Trip::create($input);
 
+            Cache::tags(['trip'])->flush();
+
             return $this->returnSuccess([]);
         } catch (Exception $e) {
             return $this->returnFalse($e->getMessage());
@@ -51,7 +59,9 @@ class TripController extends Controller
     public function show($id)
     {
         try {
-            $trip = Trip::find($id);
+            $trip = Cache::rememberForever("trip".me()->id.$id, function () use ($id) {
+                return Trip::where(['user_id' => me()->id, 'id' => $id,])->first();
+            });
 
             return $this->returnSuccess(new TripResource($trip));
         } catch (Exception $e) {
@@ -68,8 +78,16 @@ class TripController extends Controller
         try {
             $input                  = $request->validated();
             $input['how_many_days'] = dateDifference($request->start_date, $request->end_date);
+            $trip                   = Trip::where(['user_id' => me()->id, 'id' => $id,])->first();
 
-            Trip::where('id', $id)->update($input);
+            if (!$trip) {
+                return $this->returnFalse('Not Found');
+            }
+
+            $trip->update($input);
+
+            Cache::tags(['trip'])->flush();
+            Cache::forget("trip".me()->id.$id);
 
             return $this->returnSuccess([]);
         } catch (Exception $e) {
@@ -84,6 +102,9 @@ class TripController extends Controller
     public function destroy($id)
     {
         Trip::destroy($id);
+
+        Cache::tags(['trip'])->flush();
+        Cache::forget("trip".me()->id.$id);
 
         return $this->returnSuccess([]);
     }
